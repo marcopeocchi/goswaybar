@@ -9,27 +9,14 @@ import (
 )
 
 func main() {
-	go func() {
-		for {
-			metrics.CollectBatteryMetrics()
-			time.Sleep(time.Second * 10)
-		}
-	}()
-	go func() {
-		for {
-			metrics.CollectTimeMetrics()
-			time.Sleep(time.Second)
-		}
-	}()
-	go func() {
-		for {
-			metrics.CollectNICMetrics()
-			time.Sleep(time.Second * 5)
-		}
-	}()
+	// Collectors
+	go metrics.CollectTimeMetricsPeriodically()
+	go metrics.CollectNICMetricsPeriodically(time.Second * 5)
+	go metrics.CollectBatteryMetricsPeriodically(time.Second * 10)
 
 	b := pkg.NewSyncBuffer()
 
+	// Retrieve from collectors channels
 	go func() {
 		for {
 			select {
@@ -43,6 +30,7 @@ func main() {
 		}
 	}()
 
+	// Main Goroutine prints formatted text
 	for {
 		fmt.Println(b.GetFormatted())
 		time.Sleep(time.Second)

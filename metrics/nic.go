@@ -3,6 +3,7 @@ package metrics
 import (
 	"encoding/json"
 	"os/exec"
+	"time"
 )
 
 type NIC struct {
@@ -54,6 +55,13 @@ func CollectNICMetrics() error {
 
 	nicCh <- n
 	return err
+}
+
+func CollectNICMetricsPeriodically(d time.Duration) {
+	for {
+		CollectNICMetrics()
+		time.Sleep(d)
+	}
 }
 
 func GetNICChannel() chan *[]NIC {

@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"os/exec"
 	"strings"
+	"time"
 )
 
 type BatteryMetric struct {
@@ -13,7 +14,7 @@ type BatteryMetric struct {
 }
 
 var (
-	ch = make(chan BatteryMetric)
+	batCh = make(chan BatteryMetric)
 )
 
 func CollectBatteryMetrics() error {
@@ -41,7 +42,7 @@ func CollectBatteryMetrics() error {
 			}
 
 			if !strings.HasPrefix(m.Status, "0") {
-				ch <- m
+				batCh <- m
 			}
 		}
 	}()
@@ -49,6 +50,13 @@ func CollectBatteryMetrics() error {
 	return batCmd.Run()
 }
 
+func CollectBatteryMetricsPeriodically(d time.Duration) {
+	for {
+		CollectBatteryMetrics()
+		time.Sleep(d)
+	}
+}
+
 func GetBatteryChannel() chan BatteryMetric {
-	return ch
+	return batCh
 }
