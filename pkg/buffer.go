@@ -8,7 +8,7 @@ import (
 )
 
 type SyncBuffer struct {
-	nic         *[]metrics.NIC
+	nic         metrics.NIC
 	battery     metrics.BatteryMetric
 	currentTime string
 
@@ -33,7 +33,7 @@ func (b *SyncBuffer) AppendCurrentTime(metric string) {
 	b.currentTime = metric
 }
 
-func (b *SyncBuffer) AppendNICmetrics(metric *[]metrics.NIC) {
+func (b *SyncBuffer) AppendNICmetrics(metric metrics.NIC) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
 
@@ -44,25 +44,15 @@ func (b *SyncBuffer) GetFormatted() string {
 	b.mu.RLock()
 	defer b.mu.RUnlock()
 
-	var up metrics.NIC
-
-	if b.nic != nil {
-		for _, n := range *b.nic {
-			if n.IsInterfaceUp() {
-				up = n
-			}
-		}
+	if b.currentTime == "" {
+		return "Collecting data..."
 	}
 
-	if b.currentTime != "" {
-		return fmt.Sprintf(
-			"%s | %s | %s %s",
-			b.currentTime,
-			b.battery.Status,
-			up.Ifname,
-			up.AddrInfo[0].Local,
-		)
-	}
-
-	return "Collecting data..."
+	return fmt.Sprintf(
+		"%s | %s | %s %s",
+		b.currentTime,
+		b.battery.Status,
+		b.nic.Ifname,
+		b.nic.AddrInfo[0].Local,
+	)
 }

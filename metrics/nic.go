@@ -36,7 +36,7 @@ func (n *NIC) IsInterfaceUp() bool {
 }
 
 var (
-	nicCh = make(chan *[]NIC)
+	nicCh = make(chan NIC)
 )
 
 func CollectNICMetrics() error {
@@ -53,7 +53,11 @@ func CollectNICMetrics() error {
 		return err
 	}
 
-	nicCh <- n
+	for _, e := range *n {
+		if e.IsInterfaceUp() {
+			nicCh <- e
+		}
+	}
 	return err
 }
 
@@ -64,6 +68,6 @@ func CollectNICMetricsPeriodically(d time.Duration) {
 	}
 }
 
-func GetNICChannel() chan *[]NIC {
+func GetNICChannel() chan NIC {
 	return nicCh
 }
