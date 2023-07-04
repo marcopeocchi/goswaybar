@@ -1,16 +1,17 @@
-package pkg
+package buffer
 
 import (
 	"fmt"
 	"sync"
 
-	"github.com/marcopeocchi/goswaybar/metrics"
+	"github.com/marcopeocchi/goswaybar/pkg/metrics"
 )
 
 type SyncBuffer struct {
 	nic         metrics.NIC
 	battery     metrics.BatteryMetric
 	currentTime string
+	volume      string
 
 	mu sync.RWMutex
 }
@@ -33,11 +34,18 @@ func (b *SyncBuffer) AppendCurrentTime(metric string) {
 	b.currentTime = metric
 }
 
-func (b *SyncBuffer) AppendNICmetrics(metric metrics.NIC) {
+func (b *SyncBuffer) AppendNICMetrics(metric metrics.NIC) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
 
 	b.nic = metric
+}
+
+func (b *SyncBuffer) AppendVolumeMetrics(metric string) {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+
+	b.volume = metric
 }
 
 func (b *SyncBuffer) GetFormatted() string {
@@ -48,10 +56,18 @@ func (b *SyncBuffer) GetFormatted() string {
 		return "Collecting data..."
 	}
 
+	var batPercent string
+
+	if b.battery.Charging {
+		batPercent = "<span foreground=\"green\">" + b.battery.Status + "%</span>"
+	} else {
+		batPercent = "<span foreground=\"red\">" + b.battery.Status + "%</span>"
+	}
+
 	return fmt.Sprintf(
-		"%s | %s | %s %s",
+		"%s | BAT: %s | NET: %s %s",
 		b.currentTime,
-		b.battery.Status,
+		batPercent,
 		b.nic.Ifname,
 		b.nic.AddrInfo[0].Local,
 	)

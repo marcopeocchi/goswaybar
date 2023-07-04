@@ -22,13 +22,12 @@ type NIC struct {
 }
 
 type AddrInfo struct {
-	Family            string  `json:"family"`
-	Local             string  `json:"local"`
-	Prefixlen         int64   `json:"prefixlen"`
-	Scope             string  `json:"scope"`
-	Label             *string `json:"label,omitempty"`
-	ValidLifeTime     int64   `json:"valid_life_time"`
-	PreferredLifeTime int64   `json:"preferred_life_time"`
+	Family            string `json:"family"`
+	Local             string `json:"local"`
+	Prefixlen         int64  `json:"prefixlen"`
+	Scope             string `json:"scope"`
+	ValidLifeTime     int64  `json:"valid_life_time"`
+	PreferredLifeTime int64  `json:"preferred_life_time"`
 }
 
 func (n *NIC) IsInterfaceUp() bool {

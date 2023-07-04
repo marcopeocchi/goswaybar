@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/marcopeocchi/goswaybar/metrics"
-	"github.com/marcopeocchi/goswaybar/pkg"
+	"github.com/marcopeocchi/goswaybar/pkg/buffer"
+	"github.com/marcopeocchi/goswaybar/pkg/metrics"
 )
 
 func main() {
@@ -14,7 +14,8 @@ func main() {
 	go metrics.CollectNICMetricsPeriodically(time.Second * 5)
 	go metrics.CollectBatteryMetricsPeriodically(time.Second * 10)
 
-	b := pkg.NewSyncBuffer()
+	// Common buffer
+	b := buffer.NewSyncBuffer()
 
 	// Retrieve from collectors channels
 	go func() {
@@ -25,7 +26,7 @@ func main() {
 			case m := <-metrics.GetTimeChannel():
 				b.AppendCurrentTime(m)
 			case m := <-metrics.GetNICChannel():
-				b.AppendNICmetrics(m)
+				b.AppendNICMetrics(m)
 			}
 		}
 	}()

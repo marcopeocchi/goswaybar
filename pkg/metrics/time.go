@@ -1,7 +1,6 @@
 package metrics
 
 import (
-	"strings"
 	"time"
 )
 
@@ -10,7 +9,7 @@ var (
 )
 
 func CollectTimeMetrics() {
-	timeCh <- strings.ReplaceAll(time.Now().Format(time.ANSIC), "  ", " ")
+	timeCh <- time.Now().Format("2 Jan 2006 03:04PM")
 }
 
 func CollectTimeMetricsPeriodically() {

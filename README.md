@@ -7,14 +7,12 @@ Somewhat more easy on resources than spawning a shell or executing a python scri
 
 ## Requirements
 
-**goswabar** relies on `acpi` package to retrieve battery statistics and `ip` for network interfaces activity.
+**goswabar** ~~relies on `acpi` package to retrieve battery statistics and~~ `ip` for network interfaces activity.
 
 ## Build
 
 ```sh
 # Debian / Ubuntu
-
-sudo apt install acpi
 go build -o swaybar main.go
 
 sudo mv swaybar /usr/bin/swaybar
@@ -28,6 +26,7 @@ sudo mv swaybar /usr/bin/swaybar
 ```
 bar {
     position top
+    pango_markup enabled
 
     status_command /usr/bin/swaybar
 
